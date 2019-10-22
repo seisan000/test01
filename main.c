@@ -336,7 +336,6 @@ BOOL Saiki11(const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer, SCORE_LI
 	{
 		return FALSE;
 	}
-
 	//‹L˜^
 	PushEasyAnsList(stage, Answer, ScoreList );
 

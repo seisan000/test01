@@ -1,31 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-int stageList[2][9][9] = 
-{
-	{
-		{9,6,5,1,0,9,9,6,8},
-		{3,4,8,4,9,9,2,5,5},
-		{3,3,3,7,4,3,8,0,8},
-		{8,0,6,8,1,9,8,9,7},
-		{2,2,8,2,8,9,0,7,8},
-		{1,5,8,6,1,2,4,2,5},
-		{8,6,2,6,5,3,9,2,4},
-		{6,1,8,2,1,1,9,7,6},
-		{2,9,5,2,0,0,3,9,1}
-	},
-	{
-		{8,1,9,5,3,2,5,2,5},
-		{8,6,7,7,2,2,9,4,1},
-		{9,6,9,8,2,5,5,4,9},
-		{1,2,5,0,8,3,9,3,9},
-		{6,7,9,9,7,6,9,3,5},
-		{7,6,6,5,8,2,5,4,4},
-		{1,6,1,6,3,3,5,5,3},
-		{2,8,2,5,3,6,1,8,6},
-		{2,1,4,6,2,9,1,5,0},
-	}
-};
 
 #define STAGE_Y_MAX 9
 #define STAGE_X_MAX 9
@@ -42,8 +14,8 @@ typedef struct {
 	int m_isPair;
 	ANS_TAG m_ansPtr[2];
 	int m_score;
-	int m_kaburi[40];//1000ŒÂŠi”[‚Å‚«‚ê‚Î\•ª 0‚Å‰Šú‰»
-	int m_saiyo; //2 ”í‚è‚È‚µ‚Å‚ÍÌ—p‚µ‚È‚¢, 1 ?, 0 NO
+	int m_kaburi[40];//1000å€‹æ ¼ç´ã§ãã‚Œã°ååˆ† 0ã§åˆæœŸåŒ–
+	int m_saiyo; //2 è¢«ã‚Šãªã—ã§ã¯æ¡ç”¨ã—ãªã„, 1 ?, 0 NO
 	int m_color;
 }SCORE;
 
@@ -55,15 +27,15 @@ typedef struct {
 
 typedef struct
 {
-	int m_score[1024];//“K“–2^16 ³‚µ‚¢”ÍˆÍ‚Í‚ ‚Æ‚Å’T‚é
+	int m_score[1024];//é©å½“2^16 æ­£ã—ã„ç¯„å›²ã¯ã‚ã¨ã§æ¢ã‚‹
 	int m_startPos;
 	int m_endPos;
 }OPTTABLE;
-//saiyo = 0‚Í‚Ç‚¤‚·‚éH‚Ê‚©‚·‚©
+//saiyo = 0ã¯ã©ã†ã™ã‚‹ï¼Ÿã¬ã‹ã™ã‹
 
 typedef struct
 {
-	OPTTABLE optTable[62];//75ŒÂ‚ ‚ê‚Î‚¢‚¯‚é‚Æv‚¤//“ñ‚¯‚½‚Íg‚í‚È‚¢‚©‚ç‚à‚Á‚ÆŒ¸‚ç‚¹‚é@3Œ…ˆÈã62 4Œ…ˆÈã54 5Œ…ˆÈã10
+	OPTTABLE optTable[62];//75å€‹ã‚ã‚Œã°ã„ã‘ã‚‹ã¨æ€ã†//äºŒã‘ãŸã¯ä½¿ã‚ãªã„ã‹ã‚‰ã‚‚ã£ã¨æ¸›ã‚‰ã›ã‚‹ã€€3æ¡ä»¥ä¸Š62 4æ¡ä»¥ä¸Š54 5æ¡ä»¥ä¸Š10
 	int tranList[2000];
 	int count;
 
@@ -72,8 +44,8 @@ typedef struct
 typedef struct
 {
 	int ansIndex[Q3_ANS_MAX];
-	int nAnsIndex;  //ƒyƒA‚ğl—¶‚µ‚Ä‚¢‚È‚¢”
-	int nAns;		//ƒyƒA‚ğl—¶‚µ‚½”_Ans‚Ì•û
+	int nAnsIndex;  //ãƒšã‚¢ã‚’è€ƒæ…®ã—ã¦ã„ãªã„æ•°
+	int nAns;		//ãƒšã‚¢ã‚’è€ƒæ…®ã—ãŸæ•°_Ansã®æ–¹
 	int score;
 	int anaStartPos;
 }ANSWER;
@@ -193,135 +165,7 @@ int main(void)
 
 	return 0;
 }
-//”í‚Á‚Ä‚¢‚½‚çbit‚ª—§‚Â
-#define BORDER 10000
-int* g_prime = NULL;
-int prog_q2(int para)
-{
-	int i,j;
-	if(BORDER > para)
-	{
-		if(g_prime == NULL)
-		{
-			g_prime = (int*) malloc(sizeof(int )*BORDER);
-			for( i = 2; i < BORDER; i++)
-			{
-				g_prime[i] = 1;
-			}
-			g_prime[0] = 0;
-			g_prime[1] = 0;
-			for( i = 2; i < sqrt((float)BORDER); i++)
-			{
-				if(g_prime[i])
-				{
-					for( j = 0; i* (j + 2) < BORDER;j++)
-					{
-						g_prime[i*(j+2)] = 0;
-					}
-				}
-			}
-		}
-		return g_prime[para];
-	}
-	else
-	{
-		if (para <= 1)
-		{
-			return FALSE;
-		}
-		else if (para == 2 || para == 3)
-		{
-			return TRUE;
-		}
-		else if (para % 2 == 0 || para % 3 == 0)
-		{
-			return FALSE;
-		}
-		else
-		{
-
-			int square_root = (int)sqrt((float)para);
-
-			int step = 4;
-			for (i = 5; i <=square_root; i+= step)
-			{
-				if(para%i == 0)
-				{
-					return FALSE;
-				}
-				step = 6 - step;
-			}
-			return TRUE;
-		}
-
-	}
-
-}
-
-int prog_q3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANS_TAG Ans[Q3_ANS_MAX])
-{
-	int i,j,nColor,n,startPos;
-	int ansIndex[20];
-	SCORE_LIST scoreList;
-
-	BLOCK_LIST blockList;
-	OPTTABLELIST optTableList;
-	ANSWER ans;
-	ans.nAns = 0;
-	ans.nAnsIndex = 0;
-	scoreList.count = 0;
-
-	AnswerList.count = 0;
-	AnswerList.min = 0;
-	AnswerList.size = ANSLISTSIZE;
-
-	for ( i = 0; i < 1000; i++)
-	{
-		scoreList.m_score[i].m_saiyo = 1;
-		scoreList.m_score[i].m_color = 0;
-		for( j = 0; j < 30; j++)
-		{
-			scoreList.m_score[i].m_kaburi[j] = 0;
-		}
-	}
-
-	GetScoreList2(stage, &scoreList);
-
-	StaticAnalisys(&scoreList);
-
-	Coloring(&scoreList, &nColor);
-
-	MakeBlockList(&scoreList, nColor, &blockList);
-
-	n=0;
-	for (i=0; i<scoreList.count; i++)
-	{
-		if (scoreList.m_score[i].m_saiyo == 2)
-		{
-			ans.ansIndex[n]=i;
-			ans.nAnsIndex++;
-			ans.nAns+=1+scoreList.m_score[i].m_isPair;
-			startPos = i+1;
-		}
-	}
-	
-	n = 0;
-	for (j = 1; j <=nColor;j++)
-	{
-		for (i=0;i<scoreList.count;i++)
-		{
-			if (scoreList.m_score[i].m_saiyo == 1 && scoreList.m_score[i].m_color == i)
-			{
-				scoreList.order[n]=i;
-				n++;
-			}
-		}
-	}
-	
-	//1000ˆÈ‰º‚È‚ç”Ò‰ñ‚Å‚«‚é‚©‚à‚Ë(–³ª‹’)
-	Saiki11(stage, &ans,&scoreList,0,n-1);//59
-	return TRUE;
-}
+//è¢«ã£ã¦ã„ãŸã‚‰bitãŒç«‹ã¤
 
 BOOL Coloring(SCORE_LIST* ScoreList, int* nColor)
 {
@@ -434,7 +278,7 @@ BOOL PushEasyAnsList( const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer,
 	
 	point = EasyGetPoint(ScoreList,Answer->ansIndex,Answer->nAnsIndex);
 
-	//“¯‚¶—v‘f
+	//åŒã˜è¦ç´ 
 	for (i =0; i<AnswerList.count; i++)
 	{
 		if (AnswerList.list[i].score == point)
@@ -453,7 +297,7 @@ BOOL PushEasyAnsList( const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer,
 		}
 	}
 
-	//‹ó‚¢‚Ä‚é‚È‚ç“ü‚ê‚é
+	//ç©ºã„ã¦ã‚‹ãªã‚‰å…¥ã‚Œã‚‹
 	if( AnswerList.count < AnswerList.size)
 	{
 		AnswerList.list[AnswerList.count] = *(Answer);
@@ -464,11 +308,11 @@ BOOL PushEasyAnsList( const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer,
 		}
 		AnswerList.count++;
 	}
-	else//‹ó‚¢‚Ä‚¢‚È‚¢
+	else//ç©ºã„ã¦ã„ãªã„
 	{
 		if( AnswerList.min < point )
 		{
-			//min‚ÌŸ‚ÌÅ¬‚ğ’T‚·
+			//minã®æ¬¡ã®æœ€å°ã‚’æ¢ã™
 			for( i = 0; i < AnswerList.count; i++)
 			{
 				if( w1 > EasyGetPoint(ScoreList,AnswerList.list[i].ansIndex,AnswerList.list[i].nAnsIndex))
@@ -483,7 +327,7 @@ BOOL PushEasyAnsList( const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer,
 				}
 
 			}
-			//minXV
+			//minæ›´æ–°
 			AnswerList.list[w1pos] = *Answer;
 			AnswerList.list[w1pos].score = point;
 			AnswerList.min = w2;
@@ -516,18 +360,18 @@ BOOL Saiki11(const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer, SCORE_LI
 		return FALSE;
 	}
 
-	//BlockList‚É‚æ‚é”»’è
-	//ƒuƒƒbƒN‚²‚ÆƒXƒLƒbƒv‚·‚é‚È‚ç–ß‚è’l‚Å”»’è
+	//BlockListã«ã‚ˆã‚‹åˆ¤å®š
+	//ãƒ–ãƒ­ãƒƒã‚¯ã”ã¨ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ãªã‚‰æˆ»ã‚Šå€¤ã§åˆ¤å®š
 
 	//Score
-	//‹L˜^
+	//è¨˜éŒ²
 	PushEasyAnsList(stage, Answer, ScoreList );
 
 	if(ScoreList->m_score[ScoreList->order[startPos]].m_saiyo == 0)
 	{
 		return Saiki11(stage, Answer, ScoreList,startPos+1,endPos);
 	}
-	else if(ScoreList->m_score[ScoreList->order[startPos]].m_saiyo == 2)//ˆø‚Á‚©‚©‚ç‚È‚¢
+	else if(ScoreList->m_score[ScoreList->order[startPos]].m_saiyo == 2)//å¼•ã£ã‹ã‹ã‚‰ãªã„
 	{
 		Answer->ansIndex[Answer->nAnsIndex] = ScoreList->order[startPos];
 		Answer->nAnsIndex++;
@@ -535,7 +379,7 @@ BOOL Saiki11(const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer, SCORE_LI
 		return Saiki11(stage, Answer, ScoreList,startPos+1,endPos);
 	}
 
-	//d‚È‚è‚ª‚È‚¢‚©Šm”F
+	//é‡ãªã‚ŠãŒãªã„ã‹ç¢ºèª
 	for( i = 0; i < Answer->nAnsIndex; i++)
 	{
 		if (!Is1Bit(ScoreList->m_score[ScoreList->order[startPos]].m_kaburi, Answer->ansIndex[i]))
@@ -543,12 +387,12 @@ BOOL Saiki11(const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer, SCORE_LI
 			break;
 		}
 	}
-	if( i !=  Answer->nAnsIndex )//”í‚è‚ ‚è
+	if( i !=  Answer->nAnsIndex )//è¢«ã‚Šã‚ã‚Š
 	{
 		return Saiki11(stage, Answer, ScoreList,startPos+1,endPos);
 	}
 
-	//Ì—p
+	//æ¡ç”¨
 	nAns = Answer->nAns;
 	nAnsIndex = Answer->nAnsIndex;
 	Answer->ansIndex[Answer->nAnsIndex] = ScoreList->order[startPos];
@@ -562,7 +406,7 @@ BOOL Saiki11(const int stage[STAGE_Y_MAX][STAGE_X_MAX], ANSWER* Answer, SCORE_LI
 	Answer->nAnsIndex = nAnsIndex;
 
 
-	//”ñÌ—p
+	//éæ¡ç”¨
 	return Saiki11(stage, Answer, ScoreList,startPos+1,endPos);
 }
 
@@ -586,11 +430,11 @@ int BlockCheck( SCORE_LIST* ScoreList, BLOCK_LIST* blockList, ANSWER* Answer, in
 	}
 	blockPos = i;
 
-	upper = 0;//¡‚ÌƒuƒƒbƒN‚Ì’l
+	upper = 0;//ä»Šã®ãƒ–ãƒ­ãƒƒã‚¯ã®å€¤
 
-	for (i= blockPos+1; i < blockList->size; i++)//‘ÎÛƒuƒƒbƒN‚Ü‚ÅÅ‘å’l‚Ì‡Œv
+	for (i= blockPos+1; i < blockList->size; i++)//å¯¾è±¡ãƒ–ãƒ­ãƒƒã‚¯ã¾ã§æœ€å¤§å€¤ã®åˆè¨ˆ
 	{
-		//”í‚Á‚Ä‚È‚­‚ÄÅ‘å’l‚ÌƒuƒƒbƒN
+		//è¢«ã£ã¦ãªãã¦æœ€å¤§å€¤ã®ãƒ–ãƒ­ãƒƒã‚¯
 		//upper += blockList->block[i].maxScore;
 	}
 
@@ -609,7 +453,7 @@ int GetYousosu2(  ANSWER* Answer, SCORE_LIST* ScoreList)
 			{
 				if(!Is1Bit(ScoreList->m_score[i].m_kaburi,Answer->ansIndex[j]) || i == Answer->ansIndex[j])
 				{
-					break;//”í‚è
+					break;//è¢«ã‚Š
 				}
 			}
 			if( j == Answer->nAnsIndex)
@@ -688,7 +532,7 @@ BOOL InitialOptTableList(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* 
 	optTableList->count = 0;
 	for(j = 0, i = 0; i < ScoreList->count; i++)
 	{
-		//ÊF‰Šú‰»
+		//å½©è‰²åˆæœŸåŒ–
 		ScoreList->m_score[i].m_color = 0;
 		
 		//
@@ -699,9 +543,9 @@ BOOL InitialOptTableList(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* 
 		}
 	}
 
-	//ÊFŠ„‚è“–‚Äcc‚ ‚Æ‚ÅFX‚µ‚Ä‚İ‚é
-	//”í‚è‚Ü‚­‚Á‚Ä‚¢‚é“z“¯m‚ğ‚Ü‚Æ‚ß‚½•û‚ªŒø—¦“I
-	//ãˆÊƒXƒRƒA‚Ì‚â‚Â‚ç‚Í‚Ü‚Æ‚ß‚Ä‚¨‚­ccÎ‚ß‚Ì‚â‚Â‚Æ‚©l—¶‚µ‚½•û‚ª‚¢‚¢c’[‚Á‚±‚Ì‚â‚Â‚Í•Ê‚É‚µ‚Ä‚¢‚½•û‚ª‚¢‚¢
+	//å½©è‰²å‰²ã‚Šå½“ã¦â€¦â€¦ã‚ã¨ã§è‰²ã€…è©¦ã—ã¦ã¿ã‚‹
+	//è¢«ã‚Šã¾ãã£ã¦ã„ã‚‹å¥´åŒå£«ã‚’ã¾ã¨ã‚ãŸæ–¹ãŒåŠ¹ç‡çš„
+	//ä¸Šä½ã‚¹ã‚³ã‚¢ã®ã‚„ã¤ã‚‰ã¯ã¾ã¨ã‚ã¦ãŠãâ€¦â€¦æ–œã‚ã®ã‚„ã¤ã¨ã‹è€ƒæ…®ã—ãŸæ–¹ãŒã„ã„â€¦ç«¯ã£ã“ã®ã‚„ã¤ã¯åˆ¥ã«ã—ã¦ã„ãŸæ–¹ãŒã„ã„
 	ScoreList->m_score[0].m_color = 1;
 	for(i = 0; i < 15; i++)
 	{
@@ -712,7 +556,7 @@ BOOL InitialOptTableList(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* 
 
 	for( j = 1; optTableList->optTable[j].m_endPos < optTableList->count; j++ )
 	{
-		//Ä‹A‚·‚é
+		//å†å¸°ã™ã‚‹
 	}
 
 	return TRUE;
@@ -722,15 +566,15 @@ BOOL InitialOptTableList(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* 
 //{
 //	int i,j;
 //
-//	//•K‚¸Ì—p‚Æ‚©‚Ô‚è‚ª‚È‚¢‚©?
+//	//å¿…ãšæ¡ç”¨ã¨ã‹ã¶ã‚ŠãŒãªã„ã‹?
 //	
-//	//Šù‘¶‚ÌAns‚Æ‚©‚Ô‚è‚Í‚È‚¢‚©?
+//	//æ—¢å­˜ã®Ansã¨ã‹ã¶ã‚Šã¯ãªã„ã‹?
 //
-//	//”í‚è‚ª‚ ‚Á‚½‚ç”ò‚Î‚·
+//	//è¢«ã‚ŠãŒã‚ã£ãŸã‚‰é£›ã°ã™
 //	
 //}
 
-//‚à‚µ‚©‚µ‚½‚ç‚±‚Á‚¿‚Ì•û‚ª‘‚¢‚©‚à‚µ‚ê‚È‚¢
+//ã‚‚ã—ã‹ã—ãŸã‚‰ã“ã£ã¡ã®æ–¹ãŒæ—©ã„ã‹ã‚‚ã—ã‚Œãªã„
 int GetNumber3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], int startx, int starty, int endx, int endy)
 {
 	int result = 0;
@@ -835,7 +679,7 @@ BOOL GetScoreList2(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* ScoreL
 	int len,x,y,dir,endx,endy, buf;
 	int i,j,k;
 
-	//‘S‚Ä‚Ì‘f”‚ğæ“¾
+	//å…¨ã¦ã®ç´ æ•°ã‚’å–å¾—
 	for (len = 9; len > 1; len--)
 	{
 		for (x = 0; x < STAGE_X_MAX;x++)
@@ -860,10 +704,10 @@ BOOL GetScoreList2(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* ScoreL
 							ScoreList->m_score[ScoreList->count].m_isPair = 0;
 							ScoreList->count++;
 							
-							//n“_‚ÆI“_‚ª”½‘Î‚ÌÀ•W‚ª‚È‚¢‚©
+							//å§‹ç‚¹ã¨çµ‚ç‚¹ãŒåå¯¾ã®åº§æ¨™ãŒãªã„ã‹
 							for( i = 0; i < ScoreList->count-1; i++)
 							{
-								//Pair‚¶‚á‚È‚¢
+								//Pairã˜ã‚ƒãªã„
 								if(ScoreList->m_score[i].m_isPair == 0)
 								{
 									if(ScoreList->m_score[i].m_ansPtr[0].sx == endx && ScoreList->m_score[i].m_ansPtr[0].sy == endy &&ScoreList->m_score[i].m_ansPtr[0].ex == x && ScoreList->m_score[i].m_ansPtr[0].ey == y )
@@ -874,7 +718,7 @@ BOOL GetScoreList2(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* ScoreL
 							}
 							if( i  != ScoreList->count-1)
 							{
-								//¬‚³‚¢•û‚ÍÌ—p‚µ‚È‚¢ 0
+								//å°ã•ã„æ–¹ã¯æ¡ç”¨ã—ãªã„ 0
 								if(ScoreList->m_score[ScoreList->count-1].m_score > ScoreList->m_score[i].m_score)
 								{
 									ScoreList->m_score[i].m_saiyo = 0;
@@ -900,18 +744,18 @@ BOOL GetScoreList2(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* ScoreL
 			y	 = ScoreList->m_score[j].m_ansPtr[0].sy;
 			endx = ScoreList->m_score[j].m_ansPtr[0].ex;
 			endy = ScoreList->m_score[j].m_ansPtr[0].ey;
-			//“¯‚¶’l‚ª‚È‚¢‚©
+			//åŒã˜å€¤ãŒãªã„ã‹
 			for( i = j+1; i < ScoreList->count; i++)
 			{
-				//‘ÎÛ‚ªPair‚¶‚á‚È‚¢
+				//å¯¾è±¡ãŒPairã˜ã‚ƒãªã„
 				if(ScoreList->m_score[i].m_isPair == 0)
 				{
 					if (!IsIntersected(ScoreList->m_score[i].m_ansPtr[0].sx,ScoreList->m_score[i].m_ansPtr[0].sy,ScoreList->m_score[i].m_ansPtr[0].ex,ScoreList->m_score[i].m_ansPtr[0].ey,x,y,endx,endy))
 					{
-						//’l‚ª“™‚µ‚¢‚Æ‚«
+						//å€¤ãŒç­‰ã—ã„ã¨ã
 						if(ScoreList->m_score[j].m_score == ScoreList->m_score[i].m_score )
 						{
-							//n“_‚ÆI“_‚Ì”½‘ÎÀ•W‚ÅÌ—p‚µ‚È‚¢ê‡‚Å‚àƒyƒA‚Æ‚µ‚Ä‚ÍÌ—p‚·‚é‚©‚à‚µ‚ê‚È‚¢
+							//å§‹ç‚¹ã¨çµ‚ç‚¹ã®åå¯¾åº§æ¨™ã§æ¡ç”¨ã—ãªã„å ´åˆã§ã‚‚ãƒšã‚¢ã¨ã—ã¦ã¯æ¡ç”¨ã™ã‚‹ã‹ã‚‚ã—ã‚Œãªã„
 							ScoreList->m_score[ScoreList->count].m_ansPtr[0].sx = x;
 							ScoreList->m_score[ScoreList->count].m_ansPtr[0].sy = y;
 							ScoreList->m_score[ScoreList->count].m_ansPtr[0].ex = endx;
@@ -943,7 +787,7 @@ BOOL GetScoreList2(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST* ScoreL
 	{
 		printf("%d %d %d %d\n ",i,ScoreList->m_score[i].m_score,ScoreList->m_score[i].m_isPair,ScoreList->m_score[i].m_saiyo);
 	}
-	//”í‚èƒŠƒXƒgì¬
+	//è¢«ã‚Šãƒªã‚¹ãƒˆä½œæˆ
 	for (i = 0; i < ScoreList->count; i++)
 	{
 		for (j = 0;j<40;j++)
@@ -1063,7 +907,7 @@ int IsPointOnSegment(int x, int y, int x1, int y1, int x2, int y2)
 	}
 	return x1 <= x && x <= x2 && ((y1 <= y2 && y1 <= y && y <= y2) || (y1 > y2 && y2 <= y && y <= y1)) && (y-y1)*(x2 -x1) == (y2 -y1)*(x-x1);
 }
-//GetScoreList‚µ‚©g‚í‚È‚¢—\’ècc‘½­’x‚­‚Ä‚à‘åä•v
+//GetScoreListã—ã‹ä½¿ã‚ãªã„äºˆå®šâ€¦â€¦å¤šå°‘é…ãã¦ã‚‚å¤§ä¸ˆå¤«
 BOOL IsIntersected(int sx1, int sy1, int ex1, int ey1, int sx2, int sy2, int ex2, int ey2 )
 {
 	int k,j;
@@ -1152,7 +996,7 @@ BOOL Is1Bit(int* arr, int index)
 	}
 }
 
-//‚‘¬‚ÈŒvZ‚µ‚½‚¢
+//é«˜é€Ÿãªè¨ˆç®—ã—ãŸã„
 int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,int ansIndex[Q3_ANS_MAX],int nAns)
 {
 	int i,j,k,l,m,buf,result = 0;
@@ -1170,17 +1014,17 @@ int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,i
 			{
 				break;
 			}
-			//d‚È‚Á‚Ä‚¢‚éˆÊ’u‚ğ‹‚ß‚é
+			//é‡ãªã£ã¦ã„ã‚‹ä½ç½®ã‚’æ±‚ã‚ã‚‹
 		}
 
-		if(j == nAns) //d‚È‚Á‚Ä‚¢‚È‚¢‚â‚Â‚¾‚¯ŒvZ
+		if(j == nAns) //é‡ãªã£ã¦ã„ãªã„ã‚„ã¤ã ã‘è¨ˆç®—
 		{
 			buf = 0;
 			for( j = 0; j < nAns; j++)
 			{
 				if(ScoreList->m_score[ansIndex[i]].m_score == ScoreList->m_score[ansIndex[j]].m_score && i != j)
 				{
-					printf("ERRORƒAƒ‹ƒSƒŠƒYƒ€‚É–â‘è‚Ì‰Â”\«‚ ‚è\n");
+					printf("ERRORã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã«å•é¡Œã®å¯èƒ½æ€§ã‚ã‚Š\n");
 					buf = ScoreList->m_score[ScoreList->count].m_score;
 					for(k=0; k < GetKeta(ScoreList->m_score[i].m_score); k++)
 					{
@@ -1190,7 +1034,7 @@ int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,i
 			}
 			result += ScoreList->m_score[ansIndex[i]].m_score + buf;
 		}
-		else //d‚È‚Á‚Ä‚¢‚é
+		else //é‡ãªã£ã¦ã„ã‚‹
 		{
 			for (k = 0; k <= ScoreList->m_score[ansIndex[i]].m_isPair; k++)
 			{
@@ -1198,7 +1042,7 @@ int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,i
 				sy = ScoreList->m_score[ansIndex[i]].m_ansPtr[k].sy;
 				ex = ScoreList->m_score[ansIndex[i]].m_ansPtr[k].ex;
 				ey = ScoreList->m_score[ansIndex[i]].m_ansPtr[k].ey;
-				//IsPointOnSegment‚ğ—˜—p‚·‚é
+				//IsPointOnSegmentã‚’åˆ©ç”¨ã™ã‚‹
 				if(sx < ex && sy == ey)//0
 				{
 					for ( l = sx;l <= ex; l++)
@@ -1270,10 +1114,10 @@ int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,i
 			}
 		}
 
-		if(j == nAns) //d‚È‚Á‚Ä‚¢‚È‚¢‚â‚Â‚¾‚¯ŒvZ
+		if(j == nAns) //é‡ãªã£ã¦ã„ãªã„ã‚„ã¤ã ã‘è¨ˆç®—
 		{
 		}
-		else //d‚È‚Á‚Ä‚¢‚é
+		else //é‡ãªã£ã¦ã„ã‚‹
 		{
 			for (k = 0; k <= ScoreList->m_score[ansIndex[i]].m_isPair; k++)
 			{
@@ -1282,7 +1126,7 @@ int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,i
 				sy = ScoreList->m_score[ansIndex[i]].m_ansPtr[k].sy;
 				ex = ScoreList->m_score[ansIndex[i]].m_ansPtr[k].ex;
 				ey = ScoreList->m_score[ansIndex[i]].m_ansPtr[k].ey;
-				//IsPointOnSegment‚ğ—˜—p‚·‚é
+				//IsPointOnSegmentã‚’åˆ©ç”¨ã™ã‚‹
 				if(sx < ex && sy == ey)//0
 				{
 					for ( l = sx;l <= ex; l++)
@@ -1380,7 +1224,7 @@ int GetPoint3(const int stage[STAGE_Y_MAX][STAGE_X_MAX], SCORE_LIST *ScoreList,i
 	return result;
 }
 
-//ŠÈˆÕ”ÅGetPointccd‚È‚ç‚È‚¢‘O’ñAƒyƒA‚Ím_score‚ğ—˜—p
+//ç°¡æ˜“ç‰ˆGetPointâ€¦â€¦é‡ãªã‚‰ãªã„å‰æã€ãƒšã‚¢ã¯m_scoreã‚’åˆ©ç”¨
 int EasyGetPoint(SCORE_LIST *ScoreList,int ansIndex[Q3_ANS_MAX],int nAnsIndex)
 {
 	int i,result = 0;
@@ -1391,4 +1235,4 @@ int EasyGetPoint(SCORE_LIST *ScoreList,int ansIndex[Q3_ANS_MAX],int nAnsIndex)
 	return result;
 }
 
-//ƒAƒ“ƒT[ƒŠƒXƒgŠÖ”
+//ã‚¢ãƒ³ã‚µãƒ¼ãƒªã‚¹ãƒˆé–¢æ•°
